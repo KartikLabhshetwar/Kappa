@@ -23,6 +23,8 @@ import { createDocument } from '@/lib/ai/tools/create-document';
 import { updateDocument } from '@/lib/ai/tools/update-document';
 import { requestSuggestions } from '@/lib/ai/tools/request-suggestions';
 import { getWeather } from '@/lib/ai/tools/get-weather';
+import { browseWeb } from '@/lib/ai/tools/browse-web';
+import { generateComponent } from '@/lib/ai/tools/generate-component';
 import { isProductionEnvironment } from '@/lib/constants';
 import { myProvider } from '@/lib/ai/providers';
 import { entitlementsByUserType } from '@/lib/ai/entitlements';
@@ -164,6 +166,8 @@ export async function POST(request: Request) {
                   'createDocument',
                   'updateDocument',
                   'requestSuggestions',
+                  'browseWeb',
+                  'generateComponent',
                 ],
           experimental_transform: smoothStream({ chunking: 'word' }),
           tools: {
@@ -174,6 +178,8 @@ export async function POST(request: Request) {
               session,
               dataStream,
             }),
+            browseWeb,
+            generateComponent,
           },
           experimental_telemetry: {
             isEnabled: isProductionEnvironment,
