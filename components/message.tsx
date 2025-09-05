@@ -1,10 +1,9 @@
 'use client';
-import cx from 'classnames';
 import { AnimatePresence, motion } from 'framer-motion';
 import { memo, useState } from 'react';
 import type { Vote } from '@/lib/db/schema';
 import { DocumentToolResult } from './document';
-import { PencilEditIcon, SparklesIcon, LoaderIcon } from './icons';
+import { PencilEditIcon, SparklesIcon } from './icons';
 import { Response } from './elements/response';
 import { MessageContent } from './elements/message';
 import {
@@ -27,6 +26,7 @@ import { MessageReasoning } from './message-reasoning';
 import type { UseChatHelpers } from '@ai-sdk/react';
 import type { ChatMessage } from '@/lib/types';
 import { useDataStream } from './data-stream-provider';
+import { CodeBlock } from './elements/code-block';
 
 // Type narrowing is handled by TypeScript's control flow analysis
 // The AI SDK provides proper discriminated unions for tool calls
@@ -147,9 +147,10 @@ const PurePreviewMessage = ({
                       <MessageContent
                         data-testid="message-content"
                         className={cn('justify-start items-start text-left', {
-                          'bg-primary text-primary-foreground':
+                          'bg-primary text-primary-foreground [&_a]:text-blue-200 [&_a]:underline [&_a]:hover:text-blue-100':
                             message.role === 'user',
-                          'bg-transparent -ml-4': message.role === 'assistant',
+                          'bg-transparent -ml-4 [&_a]:text-blue-600 [&_a]:underline [&_a]:hover:text-blue-800 dark:[&_a]:text-blue-400 dark:[&_a]:hover:text-blue-300':
+                            message.role === 'assistant',
                         })}
                       >
                         <Response>{sanitizeText(part.text)}</Response>
@@ -271,6 +272,123 @@ const PurePreviewMessage = ({
                                 result={part.output}
                                 isReadonly={isReadonly}
                               />
+                            )
+                          }
+                          errorText={undefined}
+                        />
+                      )}
+                    </ToolContent>
+                  </Tool>
+                );
+              }
+
+              if (type === 'tool-browseWeb') {
+                const { toolCallId, state } = part;
+
+                return (
+                  <Tool key={toolCallId} defaultOpen={true}>
+                    <ToolHeader type="tool-browseWeb" state={state} />
+                    <ToolContent>
+                      {state === 'input-available' && (
+                        <ToolInput input={part.input} />
+                      )}
+                      {state === 'output-available' && (
+                        <ToolOutput
+                          output={
+                            'error' in part.output ? (
+                              <div className="p-2 text-red-500 rounded border">
+                                Error: {String(part.output.error)}
+                              </div>
+                            ) : (
+                              <div className="space-y-3">
+                                <div className="p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border">
+                                  <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
+                                    {part.output.title || 'Web Content'}
+                                  </h4>
+                                  {part.output.description && (
+                                    <p className="text-sm text-blue-700 dark:text-blue-300 mb-2">
+                                      {part.output.description}
+                                    </p>
+                                  )}
+                                  <div className="text-xs text-blue-600 dark:text-blue-400">
+                                    URL: {part.output.url}
+                                  </div>
+                                </div>
+                                {part.output.content && (
+                                  <div className="p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg border">
+                                    <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-2">
+                                      Content Preview
+                                    </h5>
+                                    <div className="text-sm text-gray-700 dark:text-gray-300 max-h-40 overflow-y-auto">
+                                      {part.output.content.substring(0, 500)}
+                                      {part.output.content.length > 500 &&
+                                        '...'}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            )
+                          }
+                          errorText={undefined}
+                        />
+                      )}
+                    </ToolContent>
+                  </Tool>
+                );
+              }
+
+              if (type === 'tool-generateComponent') {
+                const { toolCallId, state } = part;
+
+                return (
+                  <Tool key={toolCallId} defaultOpen={true}>
+                    <ToolHeader type="tool-generateComponent" state={state} />
+                    <ToolContent>
+                      {state === 'input-available' && (
+                        <ToolInput input={part.input} />
+                      )}
+                      {state === 'output-available' && (
+                        <ToolOutput
+                          output={
+                            'error' in part.output ? (
+                              <div className="p-2 text-red-500 rounded border">
+                                Error: {String(part.output.error)}
+                              </div>
+                            ) : (
+                              <div className="space-y-3">
+                                <div className="p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border">
+                                  <h4 className="font-semibold text-green-900 dark:text-green-100 mb-2">
+                                    Generated Component:{' '}
+                                    {part.output.componentName}
+                                  </h4>
+                                  <div className="text-sm text-green-700 dark:text-green-300">
+                                    UI Library:{' '}
+                                    {part.output.uiLibrary || 'tailwind'}
+                                  </div>
+                                </div>
+                                {part.output.code && (
+                                  <div className="p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg border">
+                                    <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-2">
+                                      Component Code
+                                    </h5>
+                                    <CodeBlock
+                                      code={part.output.code}
+                                      language="tsx"
+                                    />
+                                  </div>
+                                )}
+                                {part.output.usageExamples && (
+                                  <div className="p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg border">
+                                    <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-2">
+                                      Usage Examples
+                                    </h5>
+                                    <CodeBlock
+                                      code={part.output.usageExamples}
+                                      language="tsx"
+                                    />
+                                  </div>
+                                )}
+                              </div>
                             )
                           }
                           errorText={undefined}
