@@ -12,7 +12,7 @@ import {
   ToolContent,
   ToolInput,
   ToolOutput,
-} from './ai-elements/tool';
+} from './elements/tool';
 import { MessageActions } from './message-actions';
 import { PreviewAttachment } from './preview-attachment';
 import { Weather } from './weather';
