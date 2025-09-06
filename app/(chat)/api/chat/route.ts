@@ -25,6 +25,7 @@ import { requestSuggestions } from '@/lib/ai/tools/request-suggestions';
 import { getWeather } from '@/lib/ai/tools/get-weather';
 import { browseWeb } from '@/lib/ai/tools/browse-web';
 import { generateComponent } from '@/lib/ai/tools/generate-component';
+import { generateIntegration } from '@/lib/ai/tools/generate-integration';
 import { isProductionEnvironment } from '@/lib/constants';
 import { myProvider } from '@/lib/ai/providers';
 import { entitlementsByUserType } from '@/lib/ai/entitlements';
@@ -168,6 +169,7 @@ export async function POST(request: Request) {
                   'requestSuggestions',
                   'browseWeb',
                   'generateComponent',
+                  'generateIntegration',
                 ],
           experimental_transform: smoothStream({ chunking: 'word' }),
           tools: {
@@ -180,6 +182,7 @@ export async function POST(request: Request) {
             }),
             browseWeb,
             generateComponent,
+            generateIntegration,
           },
           experimental_telemetry: {
             isEnabled: isProductionEnvironment,
