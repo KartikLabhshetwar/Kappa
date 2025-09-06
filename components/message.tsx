@@ -331,7 +331,8 @@ const PurePreviewMessage = ({
                                       )}
                                       <div className="flex flex-wrap gap-2 text-xs text-blue-600 dark:text-blue-400">
                                         <span className="bg-blue-100 dark:bg-blue-900/50 px-2 py-1 rounded">
-                                          {part.output.researchType ||
+                                          {(part.output as any).mode ||
+                                            (part.output as any).researchType ||
                                             'research'}
                                         </span>
                                         {part.output.metadata?.sourcesCount && (
@@ -409,11 +410,23 @@ const PurePreviewMessage = ({
                                       Content Analysis
                                     </h5>
                                     <div className="text-sm text-gray-700 dark:text-gray-300 max-h-40 overflow-y-auto">
-                                      {typeof part.output.content === 'string'
-                                        ? `${part.output.content.substring(0, 500)}${part.output.content.length > 500 ? '...' : ''}`
-                                        : Array.isArray(part.output.content)
-                                          ? `Found ${part.output.content.length} pages of content`
-                                          : `${JSON.stringify(part.output.content, null, 2).substring(0, 500)}...`}
+                                      {(() => {
+                                        const output = part.output as any;
+                                        if (
+                                          typeof output.content === 'string'
+                                        ) {
+                                          return `${output.content.substring(0, 500)}${output.content.length > 500 ? '...' : ''}`;
+                                        }
+                                        if (Array.isArray(output.content)) {
+                                          return `Found ${output.content.length} pages of content`;
+                                        }
+                                        if (Array.isArray(output.data)) {
+                                          return `Found ${output.data.length} pages of content`;
+                                        }
+                                        const content =
+                                          output.content || output.data || {};
+                                        return `${JSON.stringify(content, null, 2).substring(0, 500)}...`;
+                                      })()}
                                     </div>
                                   </div>
                                 )}
