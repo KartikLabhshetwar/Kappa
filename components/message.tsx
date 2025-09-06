@@ -300,32 +300,180 @@ const PurePreviewMessage = ({
                                 Error: {String(part.output.error)}
                               </div>
                             ) : (
-                              <div className="space-y-3">
-                                <div className="p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border">
-                                  <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
-                                    {part.output.title || 'Web Content'}
-                                  </h4>
-                                  {part.output.description && (
-                                    <p className="text-sm text-blue-700 dark:text-blue-300 mb-2">
-                                      {part.output.description}
-                                    </p>
-                                  )}
-                                  <div className="text-xs text-blue-600 dark:text-blue-400">
-                                    URL: {part.output.url}
+                              <div className="space-y-4">
+                                {/* Research Summary */}
+                                <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                                  <div className="flex items-start gap-3">
+                                    <div className="shrink-0 size-8 bg-blue-100 dark:bg-blue-900/50 rounded-full flex items-center justify-center">
+                                      <svg
+                                        className="size-4 text-blue-600 dark:text-blue-400"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth={2}
+                                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                        />
+                                      </svg>
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-1">
+                                        {part.output.title ||
+                                          'Web Research Results'}
+                                      </h4>
+                                      {part.output.description && (
+                                        <p className="text-sm text-blue-700 dark:text-blue-300 mb-2">
+                                          {part.output.description}
+                                        </p>
+                                      )}
+                                      <div className="flex flex-wrap gap-2 text-xs text-blue-600 dark:text-blue-400">
+                                        <span className="bg-blue-100 dark:bg-blue-900/50 px-2 py-1 rounded">
+                                          {part.output.researchType ||
+                                            'research'}
+                                        </span>
+                                        {part.output.metadata?.sourcesCount && (
+                                          <span className="bg-blue-100 dark:bg-blue-900/50 px-2 py-1 rounded">
+                                            {part.output.metadata.sourcesCount}{' '}
+                                            sources
+                                          </span>
+                                        )}
+                                        {part.output.metadata?.totalPages && (
+                                          <span className="bg-blue-100 dark:bg-blue-900/50 px-2 py-1 rounded">
+                                            {part.output.metadata.totalPages}{' '}
+                                            pages
+                                          </span>
+                                        )}
+                                      </div>
+                                    </div>
                                   </div>
                                 </div>
+
+                                {/* Research Activities */}
+                                {part.output.activities &&
+                                  part.output.activities.length > 0 && (
+                                    <div className="p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg border">
+                                      <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
+                                        <svg
+                                          className="size-4 text-gray-600 dark:text-gray-400"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          viewBox="0 0 24 24"
+                                        >
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M13 10V3L4 14h7v7l9-11h-7z"
+                                          />
+                                        </svg>
+                                        Research Progress
+                                      </h5>
+                                      <div className="space-y-1 max-h-32 overflow-y-auto">
+                                        {part.output.activities.map(
+                                          (
+                                            activity: string,
+                                            activityIndex: number,
+                                          ) => (
+                                            <div
+                                              key={`activity-${part.output.url}-${activityIndex}-${activity.slice(0, 20)}`}
+                                              className="text-xs text-gray-600 dark:text-gray-400 font-mono"
+                                            >
+                                              {activity}
+                                            </div>
+                                          ),
+                                        )}
+                                      </div>
+                                    </div>
+                                  )}
+
+                                {/* Content Preview */}
                                 {part.output.content && (
                                   <div className="p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg border">
-                                    <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-2">
-                                      Content Preview
+                                    <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
+                                      <svg
+                                        className="size-4 text-gray-600 dark:text-gray-400"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth={2}
+                                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                        />
+                                      </svg>
+                                      Content Analysis
                                     </h5>
                                     <div className="text-sm text-gray-700 dark:text-gray-300 max-h-40 overflow-y-auto">
-                                      {part.output.content.substring(0, 500)}
-                                      {part.output.content.length > 500 &&
-                                        '...'}
+                                      {typeof part.output.content === 'string'
+                                        ? `${part.output.content.substring(0, 500)}${part.output.content.length > 500 ? '...' : ''}`
+                                        : Array.isArray(part.output.content)
+                                          ? `Found ${part.output.content.length} pages of content`
+                                          : `${JSON.stringify(part.output.content, null, 2).substring(0, 500)}...`}
                                     </div>
                                   </div>
                                 )}
+
+                                {/* Sources */}
+                                {part.output.sources &&
+                                  part.output.sources.length > 0 && (
+                                    <div className="p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg border">
+                                      <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
+                                        <svg
+                                          className="size-4 text-gray-600 dark:text-gray-400"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          viewBox="0 0 24 24"
+                                        >
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+                                          />
+                                        </svg>
+                                        Sources ({part.output.sources.length})
+                                      </h5>
+                                      <div className="space-y-2 max-h-32 overflow-y-auto">
+                                        {part.output.sources
+                                          .slice(0, 5)
+                                          .map(
+                                            (
+                                              source: any,
+                                              sourceIndex: number,
+                                            ) => (
+                                              <div
+                                                key={`source-${part.output.url}-${sourceIndex}-${source.url}`}
+                                                className="text-xs text-gray-600 dark:text-gray-400"
+                                              >
+                                                <div className="font-medium truncate">
+                                                  {source.title || source.url}
+                                                </div>
+                                                <div className="text-gray-500 dark:text-gray-500 truncate">
+                                                  {source.url}
+                                                </div>
+                                              </div>
+                                            ),
+                                          )}
+                                        {part.output.sources.length > 5 && (
+                                          <div className="text-xs text-gray-500 dark:text-gray-500">
+                                            ... and{' '}
+                                            {part.output.sources.length - 5}{' '}
+                                            more sources
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  )}
+
+                                {/* URL Reference */}
+                                <div className="text-xs text-gray-500 dark:text-gray-500 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                                  <strong>URL:</strong> {part.output.url}
+                                </div>
                               </div>
                             )
                           }
@@ -355,20 +503,66 @@ const PurePreviewMessage = ({
                                 Error: {String(part.output.error)}
                               </div>
                             ) : (
-                              <div className="space-y-3">
-                                <div className="p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border">
-                                  <h4 className="font-semibold text-green-900 dark:text-green-100 mb-2">
-                                    Generated Component:{' '}
-                                    {part.output.componentName}
-                                  </h4>
-                                  <div className="text-sm text-green-700 dark:text-green-300">
-                                    UI Library:{' '}
-                                    {part.output.uiLibrary || 'tailwind'}
+                              <div className="space-y-4">
+                                {/* Component Summary */}
+                                <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 rounded-lg border border-green-200 dark:border-green-800">
+                                  <div className="flex items-start gap-3">
+                                    <div className="shrink-0 size-8 bg-green-100 dark:bg-green-900/50 rounded-full flex items-center justify-center">
+                                      <svg
+                                        className="size-4 text-green-600 dark:text-green-400"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth={2}
+                                          d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
+                                        />
+                                      </svg>
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <h4 className="font-semibold text-green-900 dark:text-green-100 mb-1">
+                                        Generated Component:{' '}
+                                        {part.output.componentName}
+                                      </h4>
+                                      <div className="flex flex-wrap gap-2 text-xs text-green-600 dark:text-green-400">
+                                        <span className="bg-green-100 dark:bg-green-900/50 px-2 py-1 rounded">
+                                          {part.output.uiLibrary || 'tailwind'}
+                                        </span>
+                                        <span className="bg-green-100 dark:bg-green-900/50 px-2 py-1 rounded">
+                                          {part.output.props?.length || 0} props
+                                        </span>
+                                        {part.output.generatedAt && (
+                                          <span className="bg-green-100 dark:bg-green-900/50 px-2 py-1 rounded">
+                                            {new Date(
+                                              part.output.generatedAt,
+                                            ).toLocaleTimeString()}
+                                          </span>
+                                        )}
+                                      </div>
+                                    </div>
                                   </div>
                                 </div>
+
+                                {/* Component Code */}
                                 {part.output.code && (
                                   <div className="p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg border">
-                                    <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-2">
+                                    <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
+                                      <svg
+                                        className="size-4 text-gray-600 dark:text-gray-400"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth={2}
+                                          d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
+                                        />
+                                      </svg>
                                       Component Code
                                     </h5>
                                     <CodeBlock
@@ -377,9 +571,72 @@ const PurePreviewMessage = ({
                                     />
                                   </div>
                                 )}
+
+                                {/* Props Information */}
+                                {part.output.props &&
+                                  part.output.props.length > 0 && (
+                                    <div className="p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg border">
+                                      <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
+                                        <svg
+                                          className="size-4 text-gray-600 dark:text-gray-400"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          viewBox="0 0 24 24"
+                                        >
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                          />
+                                        </svg>
+                                        Component Props
+                                      </h5>
+                                      <div className="space-y-2">
+                                        {part.output.props.map(
+                                          (prop: any, propIndex: number) => (
+                                            <div
+                                              key={`prop-${part.output.componentName}-${propIndex}-${prop.name}`}
+                                              className="text-sm text-gray-700 dark:text-gray-300"
+                                            >
+                                              <span className="font-mono text-blue-600 dark:text-blue-400">
+                                                {prop.name}
+                                              </span>
+                                              <span className="text-gray-500 dark:text-gray-500">
+                                                : {prop.type}
+                                              </span>
+                                              {prop.required && (
+                                                <span className="text-red-500 dark:text-red-400 ml-1">
+                                                  *
+                                                </span>
+                                              )}
+                                              <div className="text-xs text-gray-500 dark:text-gray-500 ml-4">
+                                                {prop.description}
+                                              </div>
+                                            </div>
+                                          ),
+                                        )}
+                                      </div>
+                                    </div>
+                                  )}
+
+                                {/* Usage Examples */}
                                 {part.output.usageExamples && (
                                   <div className="p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg border">
-                                    <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-2">
+                                    <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
+                                      <svg
+                                        className="size-4 text-gray-600 dark:text-gray-400"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth={2}
+                                          d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                        />
+                                      </svg>
                                       Usage Examples
                                     </h5>
                                     <CodeBlock
