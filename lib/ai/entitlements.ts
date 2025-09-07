@@ -16,16 +16,12 @@ export const entitlementsByUserType: Record<UserType, Entitlements> = {
       // xAI Grok Models (if API key available)
       'chat-model',
       'chat-model-reasoning',
-      'title-model',
-      'artifact-model',
       // Google Gemini Models (if API key available)
       'gemini-chat',
       'gemini-reasoning',
-      'gemini-title',
-      'gemini-artifact',
-      'gemini-fast',
-      'gemini-pro',
-      'gemini-vision',
+      // Core models (always available)
+      'title-model',
+      'artifact-model',
     ],
   },
 
@@ -38,16 +34,12 @@ export const entitlementsByUserType: Record<UserType, Entitlements> = {
       // xAI Grok Models (if API key available)
       'chat-model',
       'chat-model-reasoning',
-      'title-model',
-      'artifact-model',
       // Google Gemini Models (if API key available)
       'gemini-chat',
       'gemini-reasoning',
-      'gemini-title',
-      'gemini-artifact',
-      'gemini-fast',
-      'gemini-pro',
-      'gemini-vision',
+      // Core models (always available)
+      'title-model',
+      'artifact-model',
     ],
   },
 

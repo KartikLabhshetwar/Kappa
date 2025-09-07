@@ -37,22 +37,4 @@ export const chatModels: Array<ChatModel> = [
       'Advanced Google Gemini model with enhanced reasoning capabilities',
     provider: 'google',
   },
-  {
-    id: 'gemini-fast',
-    name: 'Gemini Fast',
-    description: 'Ultra-fast Gemini model for quick responses',
-    provider: 'google',
-  },
-  {
-    id: 'gemini-pro',
-    name: 'Gemini Pro',
-    description: 'Most capable Gemini model for complex tasks',
-    provider: 'google',
-  },
-  {
-    id: 'gemini-vision',
-    name: 'Gemini Vision',
-    description: 'Multimodal Gemini model with vision capabilities',
-    provider: 'google',
-  },
 ];

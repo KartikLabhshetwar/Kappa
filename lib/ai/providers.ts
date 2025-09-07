@@ -56,16 +56,11 @@ export const myProvider = isTestEnvironment
             model: google('gemini-2.5-pro'),
             middleware: extractReasoningMiddleware({ tagName: 'think' }),
           }),
-          'gemini-title': google('gemini-2.5-flash'),
-          'gemini-artifact': google('gemini-2.5-pro'),
-          'gemini-fast': google('gemini-2.5-flash'),
-          'gemini-pro': google('gemini-2.5-pro'),
-          'gemini-vision': google('gemini-2.5-flash'),
         }),
 
         // Core models - always available using the best available provider
         'title-model': process.env.XAI_API_KEY
-          ? xai('grok-2-1212')
+          ? xai('grok-3-mini-beta')
           : process.env.GOOGLE_GENERATIVE_AI_API_KEY
             ? google('gemini-2.5-flash')
             : (() => {
@@ -73,7 +68,7 @@ export const myProvider = isTestEnvironment
               })(),
 
         'artifact-model': process.env.XAI_API_KEY
-          ? xai('grok-2-1212')
+          ? xai('grok-3-mini-beta')
           : process.env.GOOGLE_GENERATIVE_AI_API_KEY
             ? google('gemini-2.5-pro')
             : (() => {

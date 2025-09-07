@@ -198,23 +198,21 @@ export async function POST(request: Request) {
           system: systemPrompt({ selectedChatModel, requestHints }),
           messages: convertToModelMessages(uiMessages),
           stopWhen: stepCountIs(5),
-          experimental_activeTools:
-            selectedChatModel === 'chat-model-reasoning' ||
-            selectedChatModel === 'gemini-reasoning'
-              ? []
-              : [
-                  'getWeather',
-                  'createDocument',
-                  'updateDocument',
-                  'requestSuggestions',
-                  'browseWeb',
-                  'search',
-                  'searchContext',
-                  'searchQNA',
-                  'extract',
-                  'generateComponent',
-                ],
+          experimental_activeTools: [
+            'getWeather',
+            'createDocument',
+            'updateDocument',
+            'requestSuggestions',
+            'browseWeb',
+            'search',
+            'searchContext',
+            'searchQNA',
+            'extract',
+            'generateComponent',
+          ],
           experimental_transform: smoothStream({ chunking: 'word' }),
+          // Rate limit optimization
+          temperature: 0.7, // Slightly lower temperature for more focused responses
           tools: {
             getWeather,
             createDocument: createDocument({ session, dataStream }),
@@ -280,6 +278,12 @@ export async function POST(request: Request) {
   } catch (error) {
     if (error instanceof ChatSDKError) {
       return error.toResponse();
+    }
+
+    // Handle rate limit errors specifically
+    if (error instanceof Error && error.message.includes('quota')) {
+      console.error('Rate limit exceeded:', error.message);
+      return new ChatSDKError('rate_limit:api').toResponse();
     }
 
     console.error('Unhandled error in chat API:', error);

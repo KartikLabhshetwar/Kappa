@@ -25,16 +25,12 @@ export const postRequestBodySchema = z.object({
     // xAI Grok Models
     'chat-model',
     'chat-model-reasoning',
-    'title-model',
-    'artifact-model',
     // Google Gemini Models
     'gemini-chat',
     'gemini-reasoning',
-    'gemini-title',
-    'gemini-artifact',
-    'gemini-fast',
-    'gemini-pro',
-    'gemini-vision',
+    // Core models (always available)
+    'title-model',
+    'artifact-model',
   ]),
   selectedVisibilityType: z.enum(['public', 'private']),
 });
