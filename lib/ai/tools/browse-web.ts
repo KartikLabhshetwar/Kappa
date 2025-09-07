@@ -120,6 +120,25 @@ function extractBaseDomain(url: string): string {
   }
 }
 
+function normalizeUrl(url: string): string {
+  // If URL already has protocol, return as is
+  if (url.match(/^https?:\/\//)) {
+    return url;
+  }
+
+  // If URL starts with www., add https://
+  if (url.startsWith('www.')) {
+    return `https://${url}`;
+  }
+
+  // If URL doesn't have protocol, add https://
+  if (!url.includes('://')) {
+    return `https://${url}`;
+  }
+
+  return url;
+}
+
 // Enhanced scraper class with iterative crawling capabilities
 class FirecrawlScraper {
   private firecrawl: FirecrawlAppV1;
@@ -515,7 +534,7 @@ class FirecrawlScraper {
 
 export const browseWeb = tool({
   description:
-    'Perform comprehensive web scraping, crawling, and research using Firecrawl. Supports single page scraping, multi-page crawling, iterative depth-based crawling, and search functionality. Perfect for gathering information for component development and documentation analysis.',
+    'Perform intelligent web scraping, crawling, and research using Firecrawl with multiple modes. Use mode="single" for quick single-page extraction, mode="crawl" for multi-page API documentation, mode="iterative" for structured depth-based research, mode="search" for content discovery, or mode="deep-research" for comprehensive AI analysis. Perfect for gathering information for component development and documentation analysis.',
   inputSchema: z.object({
     url: z.string().describe('The URL to research and analyze'),
     mode: z
@@ -590,13 +609,16 @@ export const browseWeb = tool({
       formats,
     });
 
+    // Normalize URL early for consistent usage throughout the function
+    const normalizedUrl = normalizeUrl(url);
+
     try {
       // Check if API key is available
       if (!process.env.FIRECRAWL_API_KEY) {
         logger.error('Firecrawl API key not configured');
         return {
           success: false,
-          url,
+          url: normalizedUrl,
           error:
             'Firecrawl API key not configured. Please set FIRECRAWL_API_KEY environment variable.',
         };
@@ -604,10 +626,17 @@ export const browseWeb = tool({
 
       // Validate URL
       try {
-        new URL(url);
-        logger.debug('URL validation passed', { url });
+        new URL(normalizedUrl);
+        logger.debug('URL validation passed', {
+          originalUrl: url,
+          normalizedUrl,
+        });
       } catch (urlError) {
-        logger.error('Invalid URL provided', { url, error: urlError });
+        logger.error('Invalid URL provided', {
+          url,
+          normalizedUrl,
+          error: urlError,
+        });
         return {
           success: false,
           url,
@@ -622,9 +651,15 @@ export const browseWeb = tool({
       const scraper = new FirecrawlScraper();
 
       if (mode === 'single') {
-        logger.info('Executing single page scrape mode', { url });
+        logger.info('Executing single page scrape mode', {
+          url: normalizedUrl,
+        });
         // Single page scraping
-        const data = await scraper.scrapeUrl(url, includeLinks, formats);
+        const data = await scraper.scrapeUrl(
+          normalizedUrl,
+          includeLinks,
+          formats,
+        );
 
         logger.info('Single page scrape completed successfully', {
           url: data.url,
@@ -645,17 +680,20 @@ export const browseWeb = tool({
           generatedAt: new Date().toISOString(),
         };
       } else if (mode === 'crawl') {
-        logger.info('Executing multi-page crawl mode', { url, maxPages });
+        logger.info('Executing multi-page crawl mode', {
+          url: normalizedUrl,
+          maxPages,
+        });
         // Multi-page crawling
         const dataList = await scraper.crawlUrl(
-          url,
+          normalizedUrl,
           maxPages,
           includeLinks,
           formats,
         );
 
         logger.info('Multi-page crawl completed successfully', {
-          url,
+          url: normalizedUrl,
           pagesCrawled: dataList.length,
           totalContentLength: dataList.reduce(
             (sum, page) => sum + page.content.length,
@@ -666,9 +704,9 @@ export const browseWeb = tool({
         return {
           success: true,
           mode: 'crawl',
-          url,
-          title: `Crawl Results for ${url}`,
-          description: `Crawled ${dataList.length} pages from ${url}`,
+          url: normalizedUrl,
+          title: `Crawl Results for ${normalizedUrl}`,
+          description: `Crawled ${dataList.length} pages from ${normalizedUrl}`,
           data: dataList,
           totalPages: dataList.length,
           metadata: {
@@ -680,19 +718,19 @@ export const browseWeb = tool({
         };
       } else if (mode === 'iterative') {
         logger.info('Executing iterative crawl mode', {
-          url,
+          url: normalizedUrl,
           maxDepth,
           maxPagesPerDepth,
         });
         // Iterative depth-based crawling
         const dataList = await scraper.iterativeCrawl(
-          url,
+          normalizedUrl,
           maxDepth,
           maxPagesPerDepth,
         );
 
         logger.info('Iterative crawl completed successfully', {
-          url,
+          url: normalizedUrl,
           maxDepth,
           pagesCrawled: dataList.length,
           totalContentLength: dataList.reduce(
@@ -704,25 +742,28 @@ export const browseWeb = tool({
         return {
           success: true,
           mode: 'iterative',
-          url,
-          title: `Iterative Crawl Results for ${url}`,
-          description: `Iteratively crawled ${dataList.length} pages from ${url} to depth ${maxDepth}`,
+          url: normalizedUrl,
+          title: `Iterative Crawl Results for ${normalizedUrl}`,
+          description: `Iteratively crawled ${dataList.length} pages from ${normalizedUrl} to depth ${maxDepth}`,
           data: dataList,
           totalPages: dataList.length,
           maxDepth,
           metadata: {
             totalPages: dataList.length,
             maxDepth,
-            baseDomain: extractBaseDomain(url),
+            baseDomain: extractBaseDomain(normalizedUrl),
             formats,
             includeLinks,
           },
           generatedAt: new Date().toISOString(),
         };
       } else if (mode === 'search') {
-        logger.info('Executing search mode', { query: query || url, maxPages });
+        logger.info('Executing search mode', {
+          query: query || normalizedUrl,
+          maxPages,
+        });
         // Search and scrape functionality
-        const searchQuery = query || url;
+        const searchQuery = query || normalizedUrl;
         const dataList = await scraper.searchAndScrape(searchQuery, maxPages);
 
         logger.info('Search completed successfully', {
@@ -733,7 +774,7 @@ export const browseWeb = tool({
         return {
           success: true,
           mode: 'search',
-          url,
+          url: normalizedUrl,
           query: searchQuery,
           title: `Search Results for "${searchQuery}"`,
           description: `Found ${dataList.length} search results`,
@@ -749,7 +790,7 @@ export const browseWeb = tool({
         };
       } else if (mode === 'deep-research') {
         logger.info('Executing deep research mode', {
-          url,
+          url: normalizedUrl,
           query,
           maxDepth,
           timeLimit,
@@ -758,7 +799,7 @@ export const browseWeb = tool({
         // Deep research using Firecrawl's AI capabilities
         const researchQuery =
           query ||
-          `Comprehensive analysis of ${url} for React component development and API documentation`;
+          `Comprehensive analysis of ${normalizedUrl} for React component development and API documentation`;
 
         const researchParams = {
           maxDepth,
@@ -796,14 +837,14 @@ export const browseWeb = tool({
 
         if (!result.success) {
           logger.error('Deep research failed', {
-            url,
+            url: normalizedUrl,
             error: result.error,
             researchQuery,
             researchParams,
           });
           return {
             success: false,
-            url,
+            url: normalizedUrl,
             error: result.error || 'Deep research failed',
             mode: 'deep-research',
             generatedAt: new Date().toISOString(),
@@ -811,7 +852,7 @@ export const browseWeb = tool({
         }
 
         logger.info('Deep research completed successfully', {
-          url,
+          url: normalizedUrl,
           sourcesCount: result.data?.sources?.length || 0,
           hasFinalAnalysis: !!result.data?.finalAnalysis,
           activitiesCount: activities.length,
@@ -820,11 +861,11 @@ export const browseWeb = tool({
         return {
           success: true,
           mode: 'deep-research',
-          url,
+          url: normalizedUrl,
           title: result.data?.finalAnalysis
             ? 'Deep Research Analysis'
             : 'Research in Progress',
-          description: `Comprehensive analysis of ${url} with ${result.data?.sources?.length || 0} sources`,
+          description: `Comprehensive analysis of ${normalizedUrl} with ${result.data?.sources?.length || 0} sources`,
           content: result.data?.finalAnalysis || 'Analysis in progress...',
           sources: result.data?.sources || [],
           activities,
@@ -849,7 +890,7 @@ export const browseWeb = tool({
         });
         return {
           success: false,
-          url,
+          url: normalizedUrl,
           error: `Invalid mode: ${mode}. Use 'single', 'crawl', 'iterative', 'search', or 'deep-research'`,
           mode,
           generatedAt: new Date().toISOString(),
@@ -857,7 +898,7 @@ export const browseWeb = tool({
       }
     } catch (error) {
       logger.error('BrowseWeb tool execution failed', {
-        url,
+        url: normalizedUrl,
         mode,
         error:
           error instanceof Error ? error.message : 'Unknown error occurred',
@@ -868,7 +909,7 @@ export const browseWeb = tool({
 
       return {
         success: false,
-        url,
+        url: normalizedUrl,
         error:
           error instanceof Error ? error.message : 'Unknown error occurred',
         mode,
