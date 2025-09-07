@@ -404,7 +404,3 @@ MIT License - see [LICENSE](LICENSE) for details.
 - **Base UI** and **Origin UI** for accessible component libraries
 - **Next.js** team for the amazing React framework
 - **Tailwind CSS** for the utility-first styling approach
-
----
-
-- [Documentation](https://chat-sdk.dev)
