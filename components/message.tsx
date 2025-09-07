@@ -204,7 +204,11 @@ const PurePreviewMessage = ({
               if (type === 'tool-createDocument') {
                 const { toolCallId } = part;
 
-                if (part.output && 'error' in part.output) {
+                if (
+                  part.output &&
+                  typeof part.output === 'object' &&
+                  'error' in part.output
+                ) {
                   return (
                     <div
                       key={toolCallId}
@@ -227,7 +231,11 @@ const PurePreviewMessage = ({
               if (type === 'tool-updateDocument') {
                 const { toolCallId } = part;
 
-                if (part.output && 'error' in part.output) {
+                if (
+                  part.output &&
+                  typeof part.output === 'object' &&
+                  'error' in part.output
+                ) {
                   return (
                     <div
                       key={toolCallId}
@@ -262,6 +270,7 @@ const PurePreviewMessage = ({
                       {state === 'output-available' && (
                         <ToolOutput
                           output={
+                            typeof part.output === 'object' &&
                             'error' in part.output ? (
                               <div className="p-2 text-red-500 rounded border">
                                 Error: {String(part.output.error)}
@@ -301,6 +310,7 @@ const PurePreviewMessage = ({
                       {state === 'output-available' && (
                         <ToolOutput
                           output={
+                            typeof part.output === 'object' &&
                             'error' in part.output ? (
                               <div className="p-2 text-red-500 rounded border">
                                 Error: {String(part.output.error)}
@@ -574,6 +584,7 @@ const PurePreviewMessage = ({
                       {state === 'output-available' && (
                         <ToolOutput
                           output={
+                            typeof part.output === 'object' &&
                             'error' in part.output ? (
                               <div className="p-2 text-red-500 rounded border">
                                 Error: {String(part.output.error)}
