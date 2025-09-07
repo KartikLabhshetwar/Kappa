@@ -65,10 +65,28 @@ export const generateComponent = tool({
       .describe('Information about the component library to integrate with'),
     apiData: z
       .object({
-        endpoints: z.array(z.any()).optional(),
-        authentication: z.any().optional(),
+        endpoints: z
+          .array(
+            z.object({
+              path: z.string().describe('API endpoint path'),
+              method: z.string().describe('HTTP method (GET, POST, etc.)'),
+              description: z.string().describe('Endpoint description'),
+            }),
+          )
+          .optional(),
+        authentication: z
+          .object({
+            type: z.string().optional(),
+            token: z.string().optional(),
+          })
+          .optional(),
         baseUrl: z.string().optional(),
-        sdkInfo: z.any().optional(),
+        sdkInfo: z
+          .object({
+            name: z.string().optional(),
+            version: z.string().optional(),
+          })
+          .optional(),
       })
       .optional()
       .describe('Structured API data from browseWeb tool for integration'),
@@ -108,10 +126,20 @@ export const generateComponent = tool({
       installationCommand: string;
     };
     apiData?: {
-      endpoints?: any[];
-      authentication?: any;
+      endpoints?: Array<{
+        path: string;
+        method: string;
+        description: string;
+      }>;
+      authentication?: {
+        type?: string;
+        token?: string;
+      };
       baseUrl?: string;
-      sdkInfo?: any;
+      sdkInfo?: {
+        name?: string;
+        version?: string;
+      };
     };
     componentType?:
       | 'form'
@@ -158,7 +186,9 @@ export const generateComponent = tool({
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await fetch(apiData?.baseUrl + apiData.endpoints[0].path);
+        const endpoint = apiData?.endpoints?.[0];
+        const url = apiData?.baseUrl ? \`\${apiData.baseUrl}\${endpoint?.path}\` : '/api/endpoint';
+        const response = await fetch(url);
         const result = await response.json();
         setData(result.data || []);
       } catch (err) {
