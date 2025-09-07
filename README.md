@@ -7,7 +7,7 @@
 Kappa is a sophisticated AI chat interface that demonstrates advanced capabilities in:
 
 - **Real-time AI conversations** with streaming responses
-- **Intelligent web browsing** and content extraction
+- **Intelligent web browsing** and content extraction with Firecrawl and Tavily
 - **React component generation** from API documentation
 - **Multi-provider AI model support** with fallback mechanisms
 - **Production-ready architecture** with TypeScript and modern tooling
@@ -26,17 +26,19 @@ This project fulfills the AI Intern Assignment requirements by providing a compl
 - **Syntax-highlighted code** with proper formatting
 - **Thinking states** and loading indicators
 
-### Advanced Web Browsing
+### Advanced Web Browsing & Searching
 
-- **Firecrawl integration** for robust web scraping
-- **Multiple crawling modes**:
-  - Single page scraping
-  - Multi-page crawling
-  - Iterative depth-based crawling
-  - Search and scrape functionality
-  - Deep research with AI analysis
+- **Firecrawl integration** for deep web crawling and API documentation extraction
+- **Tavily integration** for intelligent web search and content discovery
+- **Multiple browsing modes**:
+  - Deep API documentation crawling with Firecrawl
+  - General web search with comprehensive results
+  - Context-aware search for detailed information
+  - Q&A search for direct answers
+  - Content extraction from specific URLs
+  - AI-powered search with answer generation
 - **Comprehensive error handling** with retry mechanisms
-- **Link extraction** and domain filtering
+- **Image search** and visual content discovery
 - **Content summarization** and metadata extraction
 
 ### React Component Generation
@@ -93,6 +95,7 @@ POSTGRES_URL=****
 
 REDIS_URL=****
 
+TAVILY_API_KEY=****
 FIRECRAWL_API_KEY=****
 ```
 
@@ -100,31 +103,31 @@ FIRECRAWL_API_KEY=****
 
 ```bash
 
-# Start development server
-pnpm dev
-
 # Run database migrations
 pnpm db:migrate
 
 # Open database studio
 pnpm db:studio
+
+# Start development server
+pnpm dev
 ```
 
 ---
 
 ## Usage Examples
 
-### Web Browsing
+### Web Browsing & Searching
 
 ```bash
-# Browse API documentation
+# Browse API documentation (Firecrawl)
 Browse the Stripe API documentation and show me the payment methods
 
-# Deep research
-Research the BillingSDK documentation and analyze their pricing structure
+# Deep research with context (Tavily)
+Search for BillingSDK documentation and analyze their pricing structure
 
-# Multi-site analysis
-Compare the API documentation between Stripe and PayPal
+# Multi-site analysis (Hybrid approach)
+Browse BillingSDK and DodoPayments documentation, then search for integration examples
 ```
 
 ### Component Generation
@@ -144,7 +147,7 @@ Create components to integrate BillingSDK with DodoPayments
 
 ```bash
 # Complete integration example
-Browse billingsdk.com and dodopayments.com, then create pricing components for both systems with integration instructions
+Browse BillingSDK and DodoPayments documentation, then create pricing components for both systems with integration instructions
 ```
 
 ---
@@ -164,7 +167,8 @@ Browse billingsdk.com and dodopayments.com, then create pricing components for b
 
 - **Vercel AI SDK** for chat orchestration
 - **AI Gateway** for multi-provider support
-- **Firecrawl** for web scraping
+- **Firecrawl** for deep web crawling and API documentation extraction
+- **Tavily** for intelligent web search and content discovery
 - **Custom tools** for component generation
 - **Streaming responses** with real-time updates
 
@@ -179,29 +183,83 @@ Browse billingsdk.com and dodopayments.com, then create pricing components for b
 
 ## Available Tools
 
-### browseWeb
+### browseWeb (Firecrawl)
 
-Comprehensive web scraping and analysis tool with multiple modes:
+Deep web crawling and API documentation extraction tool:
 
 ```typescript
+// Deep API documentation crawling
+browseWeb({
+  url: "https://stripe.com/docs/api",
+  mode: "crawl",
+  maxPages: 20,
+  includeLinks: true,
+});
+
+// Single page scraping
 browseWeb({
   url: "https://api.example.com/docs",
-  mode: "single" | "crawl" | "iterative" | "search" | "deep-research",
-  maxPages: 10,
+  mode: "scrape",
+});
+
+// Iterative deep research
+browseWeb({
+  url: "https://billingsdk.com/docs",
+  mode: "iterative",
   maxDepth: 3,
-  includeLinks: true,
-  formats: ["markdown", "html"],
 });
 ```
 
 **Features:**
 
-- Single page scraping
-- Multi-page crawling
-- Iterative depth-based crawling
-- Search and scrape functionality
-- Deep research with AI analysis
-- Automatic retry with exponential backoff
+- Deep web crawling with link following
+- API documentation extraction
+- Multi-page content aggregation
+- JavaScript rendering for dynamic content
+- Structured data extraction
+- Comprehensive error handling
+
+### Tavily Search Tools
+
+Intelligent web search and content discovery with multiple specialized tools:
+
+```typescript
+// General search with comprehensive results
+search({
+  query: "Stripe API documentation",
+  searchDepth: "advanced",
+  includeImages: true,
+  includeAnswer: true,
+  maxResults: 10,
+});
+
+// Context-aware search for detailed information
+searchContext({
+  query: "React component best practices",
+  maxTokens: 4000,
+  searchDepth: "advanced",
+});
+
+// Q&A search for direct answers
+searchQNA({
+  query: "How to integrate payment processing?",
+  searchDepth: "advanced",
+});
+
+// Content extraction from specific URLs
+extract({
+  urls: ["https://api.example.com/docs", "https://docs.example.com"],
+});
+```
+
+**Features:**
+
+- General web search with AI-generated answers
+- Context-aware search for detailed information
+- Q&A search for direct answers
+- Content extraction from specific URLs
+- Image search and visual content discovery
+- Advanced search depth options
 - Comprehensive error handling
 
 ### generateComponent
@@ -294,57 +352,12 @@ const PricingCard = ({ price, title }) => (
 
 1. **Database**: Set up PostgreSQL (Neon, Supabase, or Vercel Postgres)
 2. **AI Providers**: Configure API keys for desired models
-3. **Web Scraping**: Set up Firecrawl API key
+3. **Web Browsing**: Set up Firecrawl and Tavily API keys
 4. **Authentication**: Configure Auth.js secrets
-
-## Assignment Completion
-
-### Requirements Met
-
-1. **Chat Interface**
-
-   - Interactive, streaming chat experience
-   - Syntax-highlighted code snippets
-   - Visual indicators for thinking/browsing states
-
-2. **Browsing Tool (Crawler)**
-
-   - Integrates with chat flow
-   - Fetches and summarizes content
-   - Multiple crawling strategies
-   - Comprehensive error handling
-
-3. **Component Generation Tool**
-
-   - Generates React components from API docs
-   - Supports typed props and validation
-   - Includes usage examples
-   - Uses preferred UI libraries (Base UI, Origin UI)
-
-4. **Demo Page**
-
-   - Fully functional hosted demo
-   - Complete user experience
-   - Production-ready deployment
-
-5. **README.md**
-   - Comprehensive setup instructions
-   - Example usage scenarios
-   - UI library explanations
-   - Architecture documentation
-
-### Example Use Case: BillingSDK + DodoPayments Integration
-
-The system successfully handles the assignment's example use case:
-
-1. **Browse BillingSDK documentation** → Extract API structure and pricing models
-2. **Browse DodoPayments documentation** → Understand payment processing APIs
-3. **Generate integration components** → Create React components for both systems
-4. **Provide step-by-step instructions** → Guide users through the integration process
 
 ### Performance Metrics
 
-- **Time Spent**: ~8 hours (within estimated 6-8 hour range)
+- **Time Spent**: ~6 hours (within estimated 6-8 hour range)
 - **Bundle Size**: Optimized with code splitting
 - **Response Time**: <2s for most operations
 - **Error Rate**: <1% with comprehensive error handling
@@ -352,7 +365,7 @@ The system successfully handles the assignment's example use case:
 ### Trade-offs & Design Choices
 
 1. **UI Library Selection**: Chose Base UI + Origin UI over shadcn/ui to test AI adaptability
-2. **Crawling Strategy**: Implemented multiple modes for different use cases
+2. **Browsing Strategy**: Implemented hybrid approach with Firecrawl for crawling and Tavily for search
 3. **Error Handling**: Comprehensive retry mechanisms for production reliability
 4. **TypeScript**: Strict typing for better developer experience
 5. **Streaming**: Real-time responses for better user experience
@@ -386,7 +399,8 @@ MIT License - see [LICENSE](LICENSE) for details.
 ## Acknowledgments
 
 - **Vercel AI SDK** for the excellent AI integration framework
-- **Firecrawl** for robust web scraping capabilities
+- **Firecrawl** for deep web crawling and API documentation extraction
+- **Tavily** for intelligent web search and content discovery
 - **Base UI** and **Origin UI** for accessible component libraries
 - **Next.js** team for the amazing React framework
 - **Tailwind CSS** for the utility-first styling approach

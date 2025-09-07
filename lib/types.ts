@@ -3,8 +3,9 @@ import type { getWeather } from './ai/tools/get-weather';
 import type { createDocument } from './ai/tools/create-document';
 import type { updateDocument } from './ai/tools/update-document';
 import type { requestSuggestions } from './ai/tools/request-suggestions';
-import type { browseWeb } from './ai/tools/browse-web';
+import type { tavilyTools } from './tools/tavily';
 import type { generateComponent } from './ai/tools/generate-component';
+import type { browseWeb } from './ai/tools/browse-web';
 import type { InferUITool, UIMessage } from 'ai';
 
 import type { ArtifactKind } from '@/components/artifact';
@@ -25,6 +26,13 @@ type requestSuggestionsTool = InferUITool<
   ReturnType<typeof requestSuggestions>
 >;
 type browseWebTool = InferUITool<typeof browseWeb>;
+type tavilyToolsType = ReturnType<typeof tavilyTools>;
+type searchTool = InferUITool<NonNullable<tavilyToolsType['search']>>;
+type searchContextTool = InferUITool<
+  NonNullable<tavilyToolsType['searchContext']>
+>;
+type searchQNATool = InferUITool<NonNullable<tavilyToolsType['searchQNA']>>;
+type extractTool = InferUITool<NonNullable<tavilyToolsType['extract']>>;
 type generateComponentTool = InferUITool<typeof generateComponent>;
 
 export type ChatTools = {
@@ -33,6 +41,10 @@ export type ChatTools = {
   updateDocument: updateDocumentTool;
   requestSuggestions: requestSuggestionsTool;
   browseWeb: browseWebTool;
+  search: searchTool;
+  searchContext: searchContextTool;
+  searchQNA: searchQNATool;
+  extract: extractTool;
   generateComponent: generateComponentTool;
 };
 

@@ -282,12 +282,18 @@ const PurePreviewMessage = ({
                 );
               }
 
-              if (type === 'tool-browseWeb') {
+              if (
+                type === 'tool-search' ||
+                type === 'tool-searchContext' ||
+                type === 'tool-searchQNA' ||
+                type === 'tool-extract' ||
+                type === 'tool-browseWeb'
+              ) {
                 const { toolCallId, state } = part;
 
                 return (
                   <Tool key={toolCallId} defaultOpen={true}>
-                    <ToolHeader type="tool-browseWeb" state={state} />
+                    <ToolHeader type={type} state={state} />
                     <ToolContent>
                       {state === 'input-available' && (
                         <ToolInput input={part.input} />
@@ -301,12 +307,12 @@ const PurePreviewMessage = ({
                               </div>
                             ) : (
                               <div className="space-y-4">
-                                {/* Research Summary */}
-                                <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                                {/* Search Summary */}
+                                <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 rounded-lg border border-green-200 dark:border-green-800">
                                   <div className="flex items-start gap-3">
-                                    <div className="shrink-0 size-8 bg-blue-100 dark:bg-blue-900/50 rounded-full flex items-center justify-center">
+                                    <div className="shrink-0 size-8 bg-green-100 dark:bg-green-900/50 rounded-full flex items-center justify-center">
                                       <svg
-                                        className="size-4 text-blue-600 dark:text-blue-400"
+                                        className="size-4 text-green-600 dark:text-green-400"
                                         fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24"
@@ -320,31 +326,41 @@ const PurePreviewMessage = ({
                                       </svg>
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                      <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-1">
-                                        {part.output.title ||
-                                          'Web Research Results'}
+                                      <h4 className="font-semibold text-green-900 dark:text-green-100 mb-1">
+                                        {type === 'tool-search' &&
+                                          'Web Search Results'}
+                                        {type === 'tool-searchContext' &&
+                                          'Context Search Results'}
+                                        {type === 'tool-searchQNA' &&
+                                          'Q&A Search Results'}
+                                        {type === 'tool-extract' &&
+                                          'Content Extraction Results'}
+                                        {type === 'tool-browseWeb' &&
+                                          'Web Crawling Results'}
                                       </h4>
-                                      {part.output.description && (
-                                        <p className="text-sm text-blue-700 dark:text-blue-300 mb-2">
-                                          {part.output.description}
+                                      {(part.output.query ||
+                                        part.output.url) && (
+                                        <p className="text-sm text-green-700 dark:text-green-300 mb-2">
+                                          {part.output.query
+                                            ? `Query: ${part.output.query}`
+                                            : `URL: ${part.output.url}`}
                                         </p>
                                       )}
-                                      <div className="flex flex-wrap gap-2 text-xs text-blue-600 dark:text-blue-400">
-                                        <span className="bg-blue-100 dark:bg-blue-900/50 px-2 py-1 rounded">
-                                          {(part.output as any).mode ||
-                                            (part.output as any).researchType ||
-                                            'research'}
+                                      <div className="flex flex-wrap gap-2 text-xs text-green-600 dark:text-green-400">
+                                        <span className="bg-green-100 dark:bg-green-900/50 px-2 py-1 rounded">
+                                          {type.replace('tool-', '')}
                                         </span>
-                                        {part.output.metadata?.sourcesCount && (
-                                          <span className="bg-blue-100 dark:bg-blue-900/50 px-2 py-1 rounded">
-                                            {part.output.metadata.sourcesCount}{' '}
-                                            sources
+                                        {(part.output.results ||
+                                          part.output.content) && (
+                                          <span className="bg-green-100 dark:bg-green-900/50 px-2 py-1 rounded">
+                                            {part.output.results
+                                              ? `${part.output.results.length} results`
+                                              : 'Content extracted'}
                                           </span>
                                         )}
-                                        {part.output.metadata?.totalPages && (
-                                          <span className="bg-blue-100 dark:bg-blue-900/50 px-2 py-1 rounded">
-                                            {part.output.metadata.totalPages}{' '}
-                                            pages
+                                        {part.output.responseTime && (
+                                          <span className="bg-green-100 dark:bg-green-900/50 px-2 py-1 rounded">
+                                            {part.output.responseTime}ms
                                           </span>
                                         )}
                                       </div>
@@ -352,50 +368,12 @@ const PurePreviewMessage = ({
                                   </div>
                                 </div>
 
-                                {/* Research Activities */}
-                                {part.output.activities &&
-                                  part.output.activities.length > 0 && (
-                                    <div className="p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg border">
-                                      <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
-                                        <svg
-                                          className="size-4 text-gray-600 dark:text-gray-400"
-                                          fill="none"
-                                          stroke="currentColor"
-                                          viewBox="0 0 24 24"
-                                        >
-                                          <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M13 10V3L4 14h7v7l9-11h-7z"
-                                          />
-                                        </svg>
-                                        Research Progress
-                                      </h5>
-                                      <div className="space-y-1 max-h-32 overflow-y-auto">
-                                        {part.output.activities.map(
-                                          (
-                                            activity: string,
-                                            activityIndex: number,
-                                          ) => (
-                                            <div
-                                              key={`activity-${part.output.url}-${activityIndex}-${activity.slice(0, 20)}`}
-                                              className="text-xs text-gray-600 dark:text-gray-400 font-mono"
-                                            >
-                                              {activity}
-                                            </div>
-                                          ),
-                                        )}
-                                      </div>
-                                    </div>
-                                  )}
-
-                                {/* Content Preview */}
-                                {part.output.content && (
-                                  <div className="p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg border">
-                                    <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
+                                {/* AI Answer */}
+                                {part.output.answer && (
+                                  <div className="p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                                    <h5 className="font-medium text-blue-900 dark:text-blue-100 mb-2 flex items-center gap-2">
                                       <svg
-                                        className="size-4 text-gray-600 dark:text-gray-400"
+                                        className="size-4 text-blue-600 dark:text-blue-400"
                                         fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24"
@@ -404,38 +382,22 @@ const PurePreviewMessage = ({
                                           strokeLinecap="round"
                                           strokeLinejoin="round"
                                           strokeWidth={2}
-                                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                          d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                                         />
                                       </svg>
-                                      Content Analysis
+                                      AI Answer
                                     </h5>
-                                    <div className="text-sm text-gray-700 dark:text-gray-300 max-h-40 overflow-y-auto">
-                                      {(() => {
-                                        const output = part.output as any;
-                                        if (
-                                          typeof output.content === 'string'
-                                        ) {
-                                          return `${output.content.substring(0, 500)}${output.content.length > 500 ? '...' : ''}`;
-                                        }
-                                        if (Array.isArray(output.content)) {
-                                          return `Found ${output.content.length} pages of content`;
-                                        }
-                                        if (Array.isArray(output.data)) {
-                                          return `Found ${output.data.length} pages of content`;
-                                        }
-                                        const content =
-                                          output.content || output.data || {};
-                                        return `${JSON.stringify(content, null, 2).substring(0, 500)}...`;
-                                      })()}
-                                    </div>
+                                    <p className="text-sm text-blue-700 dark:text-blue-300">
+                                      {part.output.answer}
+                                    </p>
                                   </div>
                                 )}
 
-                                {/* Sources */}
-                                {part.output.sources &&
-                                  part.output.sources.length > 0 && (
-                                    <div className="p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg border">
-                                      <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
+                                {/* BrowseWeb Content */}
+                                {type === 'tool-browseWeb' &&
+                                  part.output.content && (
+                                    <div className="space-y-3">
+                                      <h5 className="font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
                                         <svg
                                           className="size-4 text-gray-600 dark:text-gray-400"
                                           fill="none"
@@ -446,47 +408,148 @@ const PurePreviewMessage = ({
                                             strokeLinecap="round"
                                             strokeLinejoin="round"
                                             strokeWidth={2}
-                                            d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                                           />
                                         </svg>
-                                        Sources ({part.output.sources.length})
+                                        Crawled Content
                                       </h5>
-                                      <div className="space-y-2 max-h-32 overflow-y-auto">
-                                        {part.output.sources
-                                          .slice(0, 5)
-                                          .map(
-                                            (
-                                              source: any,
-                                              sourceIndex: number,
-                                            ) => (
-                                              <div
-                                                key={`source-${part.output.url}-${sourceIndex}-${source.url}`}
-                                                className="text-xs text-gray-600 dark:text-gray-400"
-                                              >
-                                                <div className="font-medium truncate">
-                                                  {source.title || source.url}
+                                      <div className="p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg border">
+                                        <div className="prose prose-sm max-w-none dark:prose-invert">
+                                          <div
+                                            dangerouslySetInnerHTML={{
+                                              __html: part.output.content,
+                                            }}
+                                          />
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+
+                                {/* Search Results */}
+                                {part.output.results &&
+                                  part.output.results.length > 0 && (
+                                    <div className="space-y-3">
+                                      <h5 className="font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                                        <svg
+                                          className="size-4 text-gray-600 dark:text-gray-400"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          viewBox="0 0 24 24"
+                                        >
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                          />
+                                        </svg>
+                                        Search Results
+                                      </h5>
+                                      <div className="space-y-2">
+                                        {part.output.results.map(
+                                          (result: any, index: number) => (
+                                            <div
+                                              key={`${result.url}-${index}`}
+                                              className="p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg border"
+                                            >
+                                              <div className="flex items-start gap-3">
+                                                <div className="shrink-0 size-6 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-xs font-medium text-gray-600 dark:text-gray-400">
+                                                  {index + 1}
                                                 </div>
-                                                <div className="text-gray-500 dark:text-gray-500 truncate">
-                                                  {source.url}
+                                                <div className="flex-1 min-w-0">
+                                                  <h6 className="font-medium text-gray-900 dark:text-gray-100 mb-1">
+                                                    <a
+                                                      href={result.url}
+                                                      target="_blank"
+                                                      rel="noopener noreferrer"
+                                                      className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                                    >
+                                                      {result.title}
+                                                    </a>
+                                                  </h6>
+                                                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                                                    {result.url}
+                                                  </p>
+                                                  {result.content && (
+                                                    <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-3">
+                                                      {result.content}
+                                                    </p>
+                                                  )}
+                                                  <div className="flex items-center gap-2 mt-2 text-xs text-gray-500 dark:text-gray-400">
+                                                    {result.score && (
+                                                      <span>
+                                                        Score:{' '}
+                                                        {result.score.toFixed(
+                                                          2,
+                                                        )}
+                                                      </span>
+                                                    )}
+                                                    {result.publishedDate && (
+                                                      <span>
+                                                        •{' '}
+                                                        {new Date(
+                                                          result.publishedDate,
+                                                        ).toLocaleDateString()}
+                                                      </span>
+                                                    )}
+                                                  </div>
                                                 </div>
                                               </div>
-                                            ),
-                                          )}
-                                        {part.output.sources.length > 5 && (
-                                          <div className="text-xs text-gray-500 dark:text-gray-500">
-                                            ... and{' '}
-                                            {part.output.sources.length - 5}{' '}
-                                            more sources
-                                          </div>
+                                            </div>
+                                          ),
                                         )}
                                       </div>
                                     </div>
                                   )}
 
-                                {/* URL Reference */}
-                                <div className="text-xs text-gray-500 dark:text-gray-500 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
-                                  <strong>URL:</strong> {part.output.url}
-                                </div>
+                                {/* Images */}
+                                {part.output.images &&
+                                  part.output.images.length > 0 && (
+                                    <div className="space-y-3">
+                                      <h5 className="font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                                        <svg
+                                          className="size-4 text-gray-600 dark:text-gray-400"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          viewBox="0 0 24 24"
+                                        >
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                          />
+                                        </svg>
+                                        Related Images
+                                      </h5>
+                                      <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                        {part.output.images.map(
+                                          (image: any, index: number) => (
+                                            <div
+                                              key={`${image.url}-${index}`}
+                                              className="relative group"
+                                            >
+                                              <img
+                                                src={image.url}
+                                                alt={
+                                                  image.description ||
+                                                  `Image ${index + 1}`
+                                                }
+                                                className="w-full h-24 object-cover rounded-lg border"
+                                              />
+                                              {image.description && (
+                                                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                                                  <p className="text-white text-xs text-center p-2">
+                                                    {image.description}
+                                                  </p>
+                                                </div>
+                                              )}
+                                            </div>
+                                          ),
+                                        )}
+                                      </div>
+                                    </div>
+                                  )}
                               </div>
                             )
                           }

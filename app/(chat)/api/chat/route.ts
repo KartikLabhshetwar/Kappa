@@ -23,8 +23,9 @@ import { createDocument } from '@/lib/ai/tools/create-document';
 import { updateDocument } from '@/lib/ai/tools/update-document';
 import { requestSuggestions } from '@/lib/ai/tools/request-suggestions';
 import { getWeather } from '@/lib/ai/tools/get-weather';
-import { browseWeb } from '@/lib/ai/tools/browse-web';
+import { tavilyTools } from '@/lib/tools/tavily';
 import { generateComponent } from '@/lib/ai/tools/generate-component';
+import { browseWeb } from '@/lib/ai/tools/browse-web';
 import { isProductionEnvironment } from '@/lib/constants';
 import { myProvider } from '@/lib/ai/providers';
 import { entitlementsByUserType } from '@/lib/ai/entitlements';
@@ -153,11 +154,17 @@ export async function POST(request: Request) {
 
     const stream = createUIMessageStream({
       execute: ({ writer: dataStream }) => {
+        console.log('🚀 Starting chat stream with Tavily tools');
+        console.log(
+          '🔑 Tavily API Key available:',
+          !!process.env.TAVILY_API_KEY,
+        );
+
         const result = streamText({
           model: myProvider.languageModel(selectedChatModel),
           system: systemPrompt({ selectedChatModel, requestHints }),
           messages: convertToModelMessages(uiMessages),
-          stopWhen: stepCountIs(10),
+          stopWhen: stepCountIs(5),
           experimental_activeTools:
             selectedChatModel === 'chat-model-reasoning'
               ? []
@@ -167,6 +174,10 @@ export async function POST(request: Request) {
                   'updateDocument',
                   'requestSuggestions',
                   'browseWeb',
+                  'search',
+                  'searchContext',
+                  'searchQNA',
+                  'extract',
                   'generateComponent',
                 ],
           experimental_transform: smoothStream({ chunking: 'word' }),
@@ -179,6 +190,14 @@ export async function POST(request: Request) {
               dataStream,
             }),
             browseWeb,
+            ...tavilyTools(
+              {
+                apiKey: process.env.TAVILY_API_KEY || '',
+              },
+              {
+                excludeTools: [],
+              },
+            ),
             generateComponent,
           },
           experimental_telemetry: {
