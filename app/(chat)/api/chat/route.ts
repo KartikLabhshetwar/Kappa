@@ -70,8 +70,16 @@ export async function POST(request: Request) {
 
   try {
     const json = await request.json();
+    console.log('📥 Chat API Request received:', {
+      id: json.id,
+      selectedChatModel: json.selectedChatModel,
+      selectedVisibilityType: json.selectedVisibilityType,
+      messageRole: json.message?.role,
+      messageText: `${json.message?.parts?.[0]?.text?.substring(0, 100)}...`,
+    });
     requestBody = postRequestBodySchema.parse(json);
-  } catch (_) {
+  } catch (error) {
+    console.error('❌ Chat API Request parsing failed:', error);
     return new ChatSDKError('bad_request:api').toResponse();
   }
 
@@ -87,6 +95,13 @@ export async function POST(request: Request) {
       selectedChatModel: ChatModel['id'];
       selectedVisibilityType: VisibilityType;
     } = requestBody;
+
+    console.log('🔍 Processing chat request:', {
+      id,
+      selectedChatModel,
+      selectedVisibilityType,
+      messageId: message.id,
+    });
 
     const session = await auth();
 
@@ -160,13 +175,32 @@ export async function POST(request: Request) {
           !!process.env.TAVILY_API_KEY,
         );
 
+        // Log model selection and provider info
+        console.log('🤖 Model Selection:', {
+          selectedChatModel,
+          hasXaiKey: !!process.env.XAI_API_KEY,
+          hasGoogleKey: !!process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+        });
+
+        try {
+          const model = myProvider.languageModel(selectedChatModel);
+          console.log('✅ Model created successfully:', {
+            modelId: model.modelId,
+            provider: model.provider,
+          });
+        } catch (modelError) {
+          console.error('❌ Model creation failed:', modelError);
+          throw modelError;
+        }
+
         const result = streamText({
           model: myProvider.languageModel(selectedChatModel),
           system: systemPrompt({ selectedChatModel, requestHints }),
           messages: convertToModelMessages(uiMessages),
           stopWhen: stepCountIs(5),
           experimental_activeTools:
-            selectedChatModel === 'chat-model-reasoning'
+            selectedChatModel === 'chat-model-reasoning' ||
+            selectedChatModel === 'gemini-reasoning'
               ? []
               : [
                   'getWeather',

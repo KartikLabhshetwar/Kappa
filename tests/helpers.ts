@@ -24,7 +24,11 @@ export async function createAuthenticatedContext({
 }: {
   browser: Browser;
   name: string;
-  chatModel?: 'chat-model' | 'chat-model-reasoning';
+  chatModel?:
+    | 'chat-model'
+    | 'chat-model-reasoning'
+    | 'gemini-chat'
+    | 'gemini-reasoning';
 }): Promise<UserContext> {
   const directory = path.join(__dirname, '../playwright/.sessions');
 

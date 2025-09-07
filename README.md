@@ -9,7 +9,7 @@ Kappa is a sophisticated AI chat interface that demonstrates advanced capabiliti
 - **Real-time AI conversations** with streaming responses
 - **Intelligent web browsing** and content extraction with Firecrawl and Tavily
 - **React component generation** from API documentation
-- **Multi-provider AI model support** with fallback mechanisms
+- **Multi-provider AI model support** with xAI Grok and Google Gemini models
 - **Production-ready architecture** with TypeScript and modern tooling
 
 This project fulfills the AI Intern Assignment requirements by providing a complete solution for browsing API documentation and generating React components with proper UI library integration.
@@ -21,7 +21,7 @@ This project fulfills the AI Intern Assignment requirements by providing a compl
 ### AI Chat Interface
 
 - **Streaming responses** with real-time token streaming
-- **Multi-model support** (Grok Vision, Grok Reasoning)
+- **Multi-model support** (xAI Grok and Google Gemini models)
 - **Tool integration** with visual indicators
 - **Syntax-highlighted code** with proper formatting
 - **Thinking states** and loading indicators
@@ -31,12 +31,11 @@ This project fulfills the AI Intern Assignment requirements by providing a compl
 - **Firecrawl integration** for deep web crawling and API documentation extraction
 - **Tavily integration** for intelligent web search and content discovery
 - **Multiple browsing modes**:
-  - Deep API documentation crawling with Firecrawl
-  - General web search with comprehensive results
-  - Context-aware search for detailed information
-  - Q&A search for direct answers
-  - Content extraction from specific URLs
-  - AI-powered search with answer generation
+  - `single` - Quick single page scraping
+  - `crawl` - Deep API documentation crawling with Firecrawl
+  - `iterative` - Multi-depth iterative research
+  - `search` - General web search with comprehensive results
+  - `deep-research` - AI-powered comprehensive analysis
 - **Comprehensive error handling** with retry mechanisms
 - **Image search** and visual content discovery
 - **Content summarization** and metadata extraction
@@ -84,20 +83,41 @@ pnpm install
 ### Environment Variables
 
 ```bash
+# Authentication
 AUTH_SECRET=****
 
-AI_GATEWAY_API_KEY=****
-GOOGLE_GENERATIVE_AI_API_KEY=****
+# AI Providers (at least one required)
+XAI_API_KEY=****                    # For xAI Grok models
+GOOGLE_GENERATIVE_AI_API_KEY=****   # For Google Gemini models
 
+# Storage & Database
 BLOB_READ_WRITE_TOKEN=****
-
 POSTGRES_URL=****
-
 REDIS_URL=****
 
+# Web Browsing & Search
 TAVILY_API_KEY=****
 FIRECRAWL_API_KEY=****
 ```
+
+### Available AI Models
+
+**xAI Grok Models** (requires `XAI_API_KEY`):
+
+- `chat-model` - Grok Vision (grok-2-vision-1212) - Advanced multimodal model
+- `chat-model-reasoning` - Grok Reasoning (grok-3-mini-beta) - Chain-of-thought reasoning
+- `title-model` - Grok 2 (grok-2-1212) - For title generation
+- `artifact-model` - Grok 2 (grok-2-1212) - For artifact generation
+
+**Google Gemini Models** (requires `GOOGLE_GENERATIVE_AI_API_KEY`):
+
+- `gemini-chat` - Gemini 2.5 Flash - Fast conversational model
+- `gemini-reasoning` - Gemini 2.5 Pro - Advanced reasoning model
+- `gemini-fast` - Gemini 2.5 Flash - Ultra-fast responses
+- `gemini-pro` - Gemini 2.5 Pro - Most capable model
+- `gemini-vision` - Gemini 2.5 Flash - Multimodal capabilities
+- `gemini-title` - Gemini 2.5 Flash - For title generation
+- `gemini-artifact` - Gemini 2.5 Pro - For artifact generation
 
 ### Development
 
@@ -166,11 +186,12 @@ Browse BillingSDK and DodoPayments documentation, then create pricing components
 ### **AI & Tools**
 
 - **Vercel AI SDK** for chat orchestration
-- **AI Gateway** for multi-provider support
+- **Direct AI Provider Integration** (xAI and Google Gemini)
 - **Firecrawl** for deep web crawling and API documentation extraction
 - **Tavily** for intelligent web search and content discovery
 - **Custom tools** for component generation
 - **Streaming responses** with real-time updates
+- **Smart fallback mechanisms** for core functionality
 
 ### **Backend & Database**
 
@@ -199,7 +220,7 @@ browseWeb({
 // Single page scraping
 browseWeb({
   url: "https://api.example.com/docs",
-  mode: "scrape",
+  mode: "single",
 });
 
 // Iterative deep research
@@ -208,15 +229,24 @@ browseWeb({
   mode: "iterative",
   maxDepth: 3,
 });
+
+// Deep research mode
+browseWeb({
+  url: "https://docs.example.com",
+  mode: "deep-research",
+  maxPages: 10,
+});
 ```
 
 **Features:**
 
+- **Multiple browsing modes** for different use cases
 - Deep web crawling with link following
 - API documentation extraction
 - Multi-page content aggregation
 - JavaScript rendering for dynamic content
 - Structured data extraction
+- **URL normalization** for robust input handling
 - Comprehensive error handling
 
 ### Tavily Search Tools
@@ -351,9 +381,13 @@ const PricingCard = ({ price, title }) => (
 ### Environment Setup
 
 1. **Database**: Set up PostgreSQL (Neon, Supabase, or Vercel Postgres)
-2. **AI Providers**: Configure API keys for desired models
+2. **AI Providers**: Configure at least one AI provider:
+   - **xAI**: Get API key from [x.ai](https://x.ai) for Grok models
+   - **Google Gemini**: Get API key from [Google AI Studio](https://aistudio.google.com) for Gemini models
 3. **Web Browsing**: Set up Firecrawl and Tavily API keys
 4. **Authentication**: Configure Auth.js secrets
+
+**Note**: The system automatically uses available providers and falls back gracefully when only one provider is configured.
 
 ### Performance Metrics
 
@@ -366,9 +400,36 @@ const PricingCard = ({ price, title }) => (
 
 1. **UI Library Selection**: Chose Base UI + Origin UI over shadcn/ui to test AI adaptability
 2. **Browsing Strategy**: Implemented hybrid approach with Firecrawl for crawling and Tavily for search
-3. **Error Handling**: Comprehensive retry mechanisms for production reliability
-4. **TypeScript**: Strict typing for better developer experience
-5. **Streaming**: Real-time responses for better user experience
+3. **AI Provider Strategy**: Direct integration with xAI and Google Gemini instead of AI Gateway for better control
+4. **Error Handling**: Comprehensive retry mechanisms for production reliability
+5. **TypeScript**: Strict typing for better developer experience
+6. **Streaming**: Real-time responses for better user experience
+7. **Fallback Mechanisms**: Smart fallback for core functionality when providers are unavailable
+
+---
+
+## Recent Improvements
+
+### v3.1.0 - Multi-Provider AI Support
+
+**New Features:**
+
+- **Direct AI Provider Integration**: Replaced AI Gateway with direct xAI and Google Gemini integration
+- **Smart Fallback System**: Automatic fallback for core functionality when providers are unavailable
+- **Enhanced Browsing Modes**: Improved `browseWeb` tool with better mode switching
+- **URL Normalization**: Robust handling of incomplete URLs (e.g., `billingsdk.com` → `https://billingsdk.com`)
+
+**Fixes:**
+
+- **Schema Validation**: Fixed 400 Bad Request errors for new model types
+- **Model Availability**: Ensured `title-model` and `artifact-model` are always available
+- **Error Handling**: Improved error messages and debugging capabilities
+- **Provider Configuration**: Conditional model registration based on API key availability
+
+**Breaking Changes:**
+
+- **Environment Variables**: Updated to use `XAI_API_KEY` and `GOOGLE_GENERATIVE_AI_API_KEY`
+- **Model Names**: New model naming convention for better organization
 
 ---
 
@@ -399,6 +460,8 @@ MIT License - see [LICENSE](LICENSE) for details.
 ## Acknowledgments
 
 - **Vercel AI SDK** for the excellent AI integration framework
+- **xAI** for the powerful Grok models
+- **Google** for the versatile Gemini models
 - **Firecrawl** for deep web crawling and API documentation extraction
 - **Tavily** for intelligent web search and content discovery
 - **Base UI** and **Origin UI** for accessible component libraries

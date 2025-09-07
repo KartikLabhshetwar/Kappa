@@ -12,7 +12,21 @@ export const entitlementsByUserType: Record<UserType, Entitlements> = {
    */
   guest: {
     maxMessagesPerDay: 20,
-    availableChatModelIds: ['chat-model', 'chat-model-reasoning'],
+    availableChatModelIds: [
+      // xAI Grok Models (if API key available)
+      'chat-model',
+      'chat-model-reasoning',
+      'title-model',
+      'artifact-model',
+      // Google Gemini Models (if API key available)
+      'gemini-chat',
+      'gemini-reasoning',
+      'gemini-title',
+      'gemini-artifact',
+      'gemini-fast',
+      'gemini-pro',
+      'gemini-vision',
+    ],
   },
 
   /*
@@ -20,7 +34,21 @@ export const entitlementsByUserType: Record<UserType, Entitlements> = {
    */
   regular: {
     maxMessagesPerDay: 100,
-    availableChatModelIds: ['chat-model', 'chat-model-reasoning'],
+    availableChatModelIds: [
+      // xAI Grok Models (if API key available)
+      'chat-model',
+      'chat-model-reasoning',
+      'title-model',
+      'artifact-model',
+      // Google Gemini Models (if API key available)
+      'gemini-chat',
+      'gemini-reasoning',
+      'gemini-title',
+      'gemini-artifact',
+      'gemini-fast',
+      'gemini-pro',
+      'gemini-vision',
+    ],
   },
 
   /*

@@ -124,7 +124,10 @@ export const systemPrompt = ({
     'Use this tool to generate React components from API documentation and specifications.',
   );
 
-  if (selectedChatModel === 'chat-model-reasoning') {
+  if (
+    selectedChatModel === 'chat-model-reasoning' ||
+    selectedChatModel === 'gemini-reasoning'
+  ) {
     return `${regularPrompt}\n\n${requestPrompt}\n\n${integrationWorkflowToolPrompt}\n\n${browseWebToolPrompt}\n\n${searchToolPrompt}\n\n${generateComponentToolPrompt}\n\n${uiLibraryPiggybackPrompt}`;
   } else {
     return `${regularPrompt}\n\n${requestPrompt}\n\n${artifactsPrompt}\n\n${integrationWorkflowToolPrompt}\n\n${browseWebToolPrompt}\n\n${searchToolPrompt}\n\n${generateComponentToolPrompt}\n\n${uiLibraryPiggybackPrompt}`;
