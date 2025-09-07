@@ -201,49 +201,159 @@ export const generateComponent = tool({
   }, []);`
         : '';
 
-      // Generate ultra-simplified component body
+      // Generate UI library specific component body
       const getComponentBody = () => {
         const propList = props.map((p) => p.name).join(', ');
 
-        switch (componentType) {
-          case 'form':
-            return `<form className="space-y-4">
+        const getFormComponent = () => {
+          switch (uiLibrary) {
+            case 'base-ui':
+              return `<form className="space-y-4">
         <div>
-          <label className="block text-sm font-medium mb-1">Input</label>
-          <input className="w-full p-2 border rounded" placeholder="Enter value" />
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Input</label>
+          <Input className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter value" />
         </div>
-        <button type="submit" className="w-full p-2 bg-blue-600 text-white rounded">
+        <Button type="submit" className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors">
+          Submit
+        </Button>
+      </form>`;
+            case 'origin-ui':
+              return `<form className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Input</label>
+          <input className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800" placeholder="Enter value" />
+        </div>
+        <button type="submit" className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
           Submit
         </button>
       </form>`;
-          case 'data-table':
-            return `<div className="overflow-x-auto">
+            default:
+              return `<form className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Input</label>
+          <input className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800" placeholder="Enter value" />
+        </div>
+        <button type="submit" className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+          Submit
+        </button>
+      </form>`;
+          }
+        };
+
+        const getDataTableComponent = () => {
+          switch (uiLibrary) {
+            case 'base-ui':
+              return `<div className="overflow-x-auto">
         <table className="w-full border-collapse">
           <thead>
-            <tr className="border-b">
-              <th className="text-left p-2">Column</th>
+            <tr className="border-b border-gray-200 dark:border-gray-700">
+              <th className="text-left p-3 text-sm font-medium text-gray-700 dark:text-gray-300">Column</th>
             </tr>
           </thead>
           <tbody>
             {data.map((item, index) => (
-              <tr key={index} className="border-b">
-                <td className="p-2">{item.name || '-'}</td>
+              <tr key={index} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
+                <td className="p-3 text-sm text-gray-900 dark:text-gray-100">{item.name || '-'}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>`;
+            case 'origin-ui':
+              return `<div className="overflow-x-auto">
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="border-b border-gray-200 dark:border-gray-700">
+              <th className="text-left p-3 text-sm font-medium text-gray-700 dark:text-gray-300">Column</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((item, index) => (
+              <tr key={index} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
+                <td className="p-3 text-sm text-gray-900 dark:text-gray-100">{item.name || '-'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>`;
+            default:
+              return `<div className="overflow-x-auto">
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="border-b border-gray-200 dark:border-gray-700">
+              <th className="text-left p-3 text-sm font-medium text-gray-700 dark:text-gray-300">Column</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((item, index) => (
+              <tr key={index} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
+                <td className="p-3 text-sm text-gray-900 dark:text-gray-100">{item.name || '-'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>`;
+          }
+        };
+
+        switch (componentType) {
+          case 'form':
+            return getFormComponent();
+          case 'data-table':
+            return getDataTableComponent();
           default:
             return `<div className="space-y-2">
-        <h3 className="text-lg font-semibold">${componentName}</h3>
-        <p>Props: {${propList}}</p>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">${componentName}</h3>
+        <p className="text-sm text-gray-600 dark:text-gray-400">Props: {${propList}}</p>
       </div>`;
+        }
+      };
+
+      // Generate UI library specific imports
+      const getUIImports = () => {
+        switch (uiLibrary) {
+          case 'base-ui':
+            return `import { Button, Input, Select, Dialog, Popover } from '@base-ui-components/react';`;
+          case 'origin-ui':
+            return `// Origin UI components (copy-paste approach - no imports needed)`;
+          case 'chakra':
+            return `import { Button, Input, Select, Box, VStack, HStack } from '@chakra-ui/react';`;
+          case 'mantine':
+            return `import { Button, TextInput, Select, Paper, Stack } from '@mantine/core';`;
+          default:
+            return `// Tailwind CSS only - no UI library imports`;
+        }
+      };
+
+      // Generate UI library specific component patterns
+      const getUIComponentPattern = (baseContent: string) => {
+        switch (uiLibrary) {
+          case 'base-ui':
+            return baseContent.replace(
+              /className="([^"]*)"/g,
+              (match, classes) => {
+                // Base UI components with Tailwind styling
+                return `className="${classes}"`;
+              },
+            );
+          case 'origin-ui':
+            return baseContent; // Origin UI uses copy-paste components with Tailwind
+          case 'chakra':
+            return baseContent
+              .replace(/<div/g, '<Box')
+              .replace(/<\/div>/g, '</Box>');
+          case 'mantine':
+            return baseContent
+              .replace(/<div/g, '<Paper')
+              .replace(/<\/div>/g, '</Paper>');
+          default:
+            return baseContent; // Pure Tailwind CSS
         }
       };
 
       // Generate simplified component code
       const componentCode = `import React, { useState, useEffect } from 'react';
-import { cn } from '@/lib/utils';
+${getUIImports()}
 ${apiInterfaces}
 
 interface ${componentName}Props {
@@ -255,23 +365,23 @@ ${propValidation}
 ${apiIntegrationCode}
 
   if (loading) {
-    return <div className="p-4 text-center">Loading...</div>;
+    return <div className="p-4 text-center text-gray-600 dark:text-gray-400">Loading...</div>;
   }
 
   if (error) {
-    return <div className="p-4 text-red-500">Error: {error.message}</div>;
+    return <div className="p-4 text-red-500 bg-red-50 dark:bg-red-900/20 rounded-lg">Error: {error}</div>;
   }
 
   return (
-    <div className="p-4 border rounded-lg bg-white dark:bg-gray-800">
-${getComponentBody()}
+    <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 shadow-sm">
+${getUIComponentPattern(getComponentBody())}
     </div>
   );
 }
 
 export default ${componentName};`;
 
-      // Generate minimal usage examples
+      // Generate UI library specific usage examples
       const usageExamples = includeExamples
         ? `// Basic usage
 <${componentName} 
@@ -281,7 +391,12 @@ export default ${componentName};`;
 // TypeScript usage
 const MyComponent: React.FC<${componentName}Props> = (props) => {
   return <${componentName} {...props} />;
-};`
+};
+
+// UI Library: ${uiLibrary}
+${uiLibrary === 'base-ui' ? '// Uses @base-ui-components/react for unstyled, accessible components' : ''}
+${uiLibrary === 'origin-ui' ? '// Uses Origin UI copy-paste components with Tailwind CSS' : ''}
+${uiLibrary === 'tailwind' ? '// Uses pure Tailwind CSS for styling' : ''}`
         : '';
 
       return {
