@@ -2,6 +2,21 @@
 
 An AI-powered chat interface that can browse the web, extract API documentation, and generate React components automatically.
 
+<img width="1408" height="736" alt="opengraph-image" src="https://github.com/user-attachments/assets/03095789-490c-4597-b8e3-0fab0a68d4af" />
+
+
+
+## Demo
+
+
+https://github.com/user-attachments/assets/6f5a9041-31bb-4b21-9bdc-eb29a611e61d
+
+
+
+https://github.com/user-attachments/assets/38deb0d2-c42d-460e-a9a1-9e092168acc7
+
+
+
 ## What It Does
 
 - **Chat with AI** using xAI Grok or Google Gemini models
@@ -12,19 +27,19 @@ An AI-powered chat interface that can browse the web, extract API documentation,
 
 ## Key Features
 
-### 🤖 AI Chat
+### AI Chat
 
 - Real-time streaming responses
 - Multiple AI models (xAI Grok, Google Gemini)
 - Visual tool indicators and syntax highlighting
 
-### 🌐 Web Tools
+### Web Tools
 
 - **Search**: Find information using Tavily
 - **Scrape**: Extract content from URLs using Firecrawl
 - Multiple modes: single page, deep crawl, iterative research
 
-### ⚛️ Component Generation
+### Component Generation
 
 - Generate TypeScript React components from API docs
 - Tailwind CSS styling with accessibility features
@@ -105,25 +120,25 @@ Visit `http://localhost:3000` and start chatting!
 
 ## How to Use
 
-### 🔍 Search the Web
+### Search the Web
 
 ```text
 Search for React component libraries and show me the best options
 ```
 
-### 🕷️ Scrape Websites
+### Scrape Websites
 
 ```text
 Browse the Stripe API documentation and extract the payment methods
 ```
 
-### ⚛️ Generate Components
+### Generate Components
 
 ```text
 Create a React pricing card component based on the Stripe API
 ```
 
-### 🔗 Full Integration Workflow
+### Full Integration Workflow
 
 ```text
 Browse BillingSDK and DodoPayments documentation, then create components to integrate both systems
@@ -174,7 +189,7 @@ Browse BillingSDK and DodoPayments documentation, then create components to inte
 
 ## Available Tools
 
-### 🔍 Search Tools (Tavily)
+### Search Tools (Tavily)
 
 - **search** - General web search with AI answers
 - **searchContext** - Context-aware search with token limits
@@ -190,7 +205,7 @@ Browse BillingSDK and DodoPayments documentation, then create components to inte
   - `search` - Content discovery
   - `deep-research` - AI-powered comprehensive analysis
 
-### ⚛️ Component Generation Tool
+###  Component Generation Tool
 
 - **generateComponent** - Create React components from API docs
   - TypeScript interfaces
@@ -199,7 +214,7 @@ Browse BillingSDK and DodoPayments documentation, then create components to inte
   - Usage examples
   - Accessibility compliance
 
-### 📄 Additional Tools
+### Additional Tools
 
 - **createDocument** - Create content artifacts
 - **updateDocument** - Modify existing artifacts
@@ -210,14 +225,14 @@ Browse BillingSDK and DodoPayments documentation, then create components to inte
 
 ## UI Libraries
 
-### ✅ Preferred
+### Preferred
 
 - **Base UI** - Unstyled, accessible components
 - **Origin UI** - Copy-paste styled components
 - **Tailwind CSS** - Utility-first styling
 - **Radix UI** - Accessible primitives
 
-### ❌ Avoided
+###  Avoided
 
 - **shadcn/ui** - Explicitly avoided to test AI adaptability
 
@@ -228,9 +243,18 @@ Browse BillingSDK and DodoPayments documentation, then create components to inte
 - **Redis caching** for improved performance
 - **Error boundaries** for graceful error handling
 
-## Support
+## Estimate time
+- around ~ 6 hours.
 
-- **Issues**: [GitHub Issues](https://github.com/KartikLabhshetwar/Kappa/issues)
+### Trade-offs & Design Choices
+
+1. **UI Library Selection**: Chose Base UI + Origin UI over shadcn/ui to test AI adaptability
+2. **Browsing Strategy**: Implemented hybrid approach with Firecrawl for crawling and Tavily for search
+3. **AI Provider Strategy**: Direct integration with xAI and Google Gemini instead of AI Gateway for better control
+4. **Error Handling**: Comprehensive retry mechanisms for production reliability
+5. **TypeScript**: Strict typing for better developer experience
+6. **Streaming**: Real-time responses for better user experience
+7. **Fallback Mechanisms**: Smart fallback for core functionality when providers are unavailable
 
 ## Acknowledgments
 
