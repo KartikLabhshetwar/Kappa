@@ -147,7 +147,7 @@ const PurePreviewMessage = ({
                       <MessageContent
                         data-testid="message-content"
                         className={cn('justify-start items-start text-left', {
-                          'bg-primary text-primary-foreground [&_a]:text-blue-200 [&_a]:underline [&_a]:hover:text-blue-100':
+                          'bg-gray-100 text-gray-900 dark:bg-neutral-800 dark:text-white [&_a]:text-blue-500 [&_a]:underline [&_a]:hover:text-blue-300':
                             message.role === 'user',
                           'bg-transparent -ml-4 [&_a]:text-blue-600 [&_a]:underline [&_a]:hover:text-blue-800 dark:[&_a]:text-blue-400 dark:[&_a]:hover:text-blue-300':
                             message.role === 'assistant',
